@@ -1,2 +1,2 @@
 # virtualsynthesizer
-CSC258 final
+CSC258 final project
