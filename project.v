@@ -1,6 +1,5 @@
 module synth_top(SW, KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N, VGA_R, VGA_G, VGA_B);
 
-
   input [9:0] SW;
   input CLOCK_50;  
   input [3:0] KEY;
@@ -16,13 +15,19 @@ module synth_top(SW, KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SY
 
   wire reset;
   assign reset = KEY[0];
+
+  wire [2:0] colour;
+  wire [7:0] x;
+  wire [6:0] y;
+  wire plot;
+  
   vga_adapter VGA(
     .resetn(reset), 
     .clock(CLOCK_50), 
-    .colour(colour), 
-    .x(x), 
-    .y(y), 
-    .plot(plot), 
+    .colour(colour), //Yet to be assigned 
+    .x(x), //Yet to be assigned 
+    .y(y), //Yet to be assigned 
+    .plot(plot), //Yet to be assigned
     .VGA_CLK(VGA_CLK), 
     .VGA_HS(VGA_HS), 
     .VGA_VS(VGA_VS),
@@ -32,9 +37,18 @@ module synth_top(SW, KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SY
     .VGA_G(VGA_G), 
     .VGA_B(VGA_B)
   );
+
   defparam VGA.RESOLUTION = "160x120";
   defparam VGA.MONOCHROME = "FALSE";
   defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
 
-
-
+  gui g(
+    .clock(CLOCK_50), 
+    .reset(reset), 
+    .keys(SW[3:0]), 
+    .colour(colour), 
+    .x(x), 
+    .y(y), 
+    .plot(plot)
+  );
+endmodule

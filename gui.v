@@ -1,65 +1,30 @@
-module gui(SW, KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N, VGA_R, VGA_G, VGA_B);
+module gui(clock, reset, keys, colour, x, y, plot); 
 	
-  input [9:0] SW;
-  input CLOCK_50;  
-  input [3:0] KEY;
+  input clock;
+  input reset; 
+  input [3:0] keys;
 
-  output VGA_CLK;
-  output VGA_HS;
-  output VGA_VS;
-  output VGA_BLANK_N;
-  output VGA_SYNC_N;
-  output [9:0] VGA_R;
-  output [9:0] VGA_G;
-  output [9:0] VGA_B;
+  output [2:0] colour;
+  output [7:0] x;
+  output [6:0] y;
+  output plot;
 
-	
-  wire [2:0] colour;
-  wire [7:0] x;
-  wire [6:0] y;
-  wire plot;
   wire redraw;
   wire [3:0] keys_pressed;
   wire [14:0] clock_count; 
   
-  wire reset;
-  
-  assign reset = KEY[0];
- 
-  vga_adapter VGA(
-    .resetn(reset), 
-    .clock(CLOCK_50), 
-    .colour(colour), 
-    .x(x), 
-    .y(y), 
-    .plot(plot), 
-    .VGA_CLK(VGA_CLK), 
-    .VGA_HS(VGA_HS), 
-    .VGA_VS(VGA_VS),
-    .VGA_BLANK(VGA_BLANK_N), 
-    .VGA_SYNC(VGA_SYNC_N), 
-    .VGA_R(VGA_R), 
-    .VGA_G(VGA_G), 
-    .VGA_B(VGA_B)
-  );
-  defparam VGA.RESOLUTION = "160x120";
-  defparam VGA.MONOCHROME = "FALSE";
-  defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
- 
-
-   
   controlgui g(
-    .clock(CLOCK_50), 
+    .clock(clock), 
     .reset(reset), 
     .plot(plot), 
-    .keys(SW[3:0]), 
+    .keys(keys), 
     .redraw(redraw), 
     .clock_count(clock_count), 
     .keys_pressed(keys_pressed), 
   ); 
 
   datapathgui d(
-    .clock(CLOCK_50), 
+    .clock(clock), 
     .reset(reset), 
     .redraw(redraw), 
     .keys_pressed(keys_pressed), 
@@ -70,22 +35,23 @@ module gui(SW, KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N, 
  ); 
 endmodule
 
-
-module controlgui(clock, reset, plot, keys, redraw, clock_count, keys_pressed);
-  
+module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
   input clock, reset;
   input [3:0] keys;
 
-  output reg [3:0] keys_pressed;
-  output reg plot, redraw;
-  output reg [14:0] clock_count;
+  //Remove unnecessary regs
+  output reg [3:0] keys_pressed; 
+  output reg plot, redraw; 
+  output reg [14:0] clock_count; 
 
-  reg [2:0] current_state, next_state;
+  reg [2:0] current_state, next_state; //Does this? Yes
 
   localparam REDRAW = 3'b000,
              STATIONARY = 3'b001, 
              KEY_ONE_PRESSED = 3'b010; 
-             
+  /*
+  * Can be reset for testing purposes 
+  */
   parameter PIXEL_COUNT = 15'b111100010100001;
 
   always @(posedge clock) begin
@@ -105,7 +71,7 @@ module controlgui(clock, reset, plot, keys, redraw, clock_count, keys_pressed);
   always @(*) 
   begin: state_table
     case (current_state)
-      REDRAW: next_state = clock_count == 15'b111100010100001 ? STATIONARY : REDRAW;
+      REDRAW: next_state = clock_count == PIXEL_COUNT ? STATIONARY : REDRAW;
       STATIONARY: begin 
         if (keys[0] == 1'b1) begin 
           next_state = KEY_ONE_PRESSED;
@@ -114,7 +80,7 @@ module controlgui(clock, reset, plot, keys, redraw, clock_count, keys_pressed);
           next_state = REDRAW;
         end 
       end
-      KEY_ONE_PRESSED: next_state = clock_count == 15'b111100010100001 ? STATIONARY : KEY_ONE_PRESSED;
+      KEY_ONE_PRESSED: next_state = clock_count == PIXEL_COUNT ? STATIONARY : KEY_ONE_PRESSED;
       default: next_state = REDRAW;
     endcase
   end 
@@ -140,15 +106,19 @@ module controlgui(clock, reset, plot, keys, redraw, clock_count, keys_pressed);
   end 
 endmodule
 
-module datapathgui(clock, reset, redraw, pressed_keys, colour, x, y, clock_count);
+module datapathgui(clock, reset, redraw, keys_pressed, colour, x, y, clock_count);
   input clock, reset, redraw;
   input [14:0] clock_count;
-  input [3:0] pressed_keys;
+  input [3:0] keys_pressed;
 
+  //Remove unnecessary regs
   output reg [2:0] colour;
   output reg [7:0] x;
   output reg [6:0] y;
 
+  /*
+  * Don't need these
+  */
   reg [7:0] temp_x;
   reg [6:0] temp_y;
 
@@ -160,6 +130,8 @@ module datapathgui(clock, reset, redraw, pressed_keys, colour, x, y, clock_count
   parameter SECOND_DIVIDER = 8'b01001111;
   parameter THIRD_DIVIDER = 8'b01110111;
 
+  parameter MAX_X = 8'b10100000;
+  parameter MAX_Y = 7'b1111000;
   always @(posedge clock) begin 
     if (!reset) begin
 
@@ -174,7 +146,7 @@ module datapathgui(clock, reset, redraw, pressed_keys, colour, x, y, clock_count
         colour <= BLACK;
       end
       else begin 
-        if (pressed_keys == 4'b001 & clock_count[7:0] < 8'b00100111) begin 
+        if (keys_pressed == 4'b001 & clock_count[7:0] < FIRST_DIVIDER) begin 
           colour <= RED;
         end 
         else begin 
@@ -182,10 +154,10 @@ module datapathgui(clock, reset, redraw, pressed_keys, colour, x, y, clock_count
         end 
       end 
 
-      if (!(clock_count[7:0] > 8'b10100000)) begin 
+      if (!(clock_count[7:0] > MAX_X)) begin 
 		x <= temp_x + clock_count[7:0];
-	  end 
-      if (!(clock_count[14:8] > 7'b1111000)) begin
+      end 
+      if (!(clock_count[14:8] > MAX_Y)) begin
 		y <= temp_y + clock_count[14:8];
       end 
   end 
