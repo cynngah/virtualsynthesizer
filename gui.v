@@ -1,3 +1,4 @@
+`timescale 1ns / 1ns
 module gui(clock, reset, keys, colour, x, y, plot); 
 	
   input clock;
@@ -20,7 +21,7 @@ module gui(clock, reset, keys, colour, x, y, plot);
     .keys(keys), 
     .redraw(redraw), 
     .clock_count(clock_count), 
-    .keys_pressed(keys_pressed), 
+    .keys_pressed(keys_pressed) 
   ); 
 
   datapathgui d(
@@ -28,10 +29,10 @@ module gui(clock, reset, keys, colour, x, y, plot);
     .reset(reset), 
     .redraw(redraw), 
     .keys_pressed(keys_pressed), 
-    .clock_count(clock_count)
+    .clock_count(clock_count), 
     .colour(colour),
     .x(x), 
-    .y(y), 
+    .y(y) 
  ); 
 endmodule
 
@@ -102,6 +103,7 @@ module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
         plot = 1'b1;
         redraw = 1'b1;
         keys_pressed = 4'b0001;
+      end
     endcase
   end 
 endmodule
@@ -134,7 +136,6 @@ module datapathgui(clock, reset, redraw, keys_pressed, colour, x, y, clock_count
   parameter MAX_Y = 7'b1111000;
   always @(posedge clock) begin 
     if (!reset) begin
-
       x <= 8'b0;
       y <= 8'b0;
       colour <= 3'b0;
@@ -155,10 +156,11 @@ module datapathgui(clock, reset, redraw, keys_pressed, colour, x, y, clock_count
       end 
 
       if (!(clock_count[7:0] > MAX_X)) begin 
-		x <= temp_x + clock_count[7:0];
+ 	 x <= temp_x + clock_count[7:0];
       end 
       if (!(clock_count[14:8] > MAX_Y)) begin
-		y <= temp_y + clock_count[14:8];
+ 	 y <= temp_y + clock_count[14:8];
       end 
-  end 
+    end 
+  end
 endmodule
