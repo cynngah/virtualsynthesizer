@@ -1,8 +1,9 @@
-module synth_top(SW, KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N, VGA_R, VGA_G, VGA_B);
+module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N, VGA_R, VGA_G, VGA_B, PS2_CLK, PS2_DAT);
 
-  input [9:0] SW;
   input CLOCK_50;  
   input [3:0] KEY;
+  input PS2_CLK;
+  input PS2_DAT;
 
   output VGA_CLK;
   output VGA_HS;
@@ -20,7 +21,8 @@ module synth_top(SW, KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SY
   wire [7:0] x;
   wire [6:0] y;
   wire plot;
-  
+  wire [7:0] keyboard_data;
+
   vga_adapter VGA(
     .resetn(reset), 
     .clock(CLOCK_50), 
@@ -37,7 +39,6 @@ module synth_top(SW, KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SY
     .VGA_G(VGA_G), 
     .VGA_B(VGA_B)
   );
-
   defparam VGA.RESOLUTION = "160x120";
   defparam VGA.MONOCHROME = "FALSE";
   defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
@@ -50,5 +51,11 @@ module synth_top(SW, KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SY
     .x(x), 
     .y(y), 
     .plot(plot)
+  );
+
+  keyboard k(
+    .clock(PS2_CLK), 
+    .char(PS2_DAT), 
+    .keyboard_data(keyboard_data) 
   );
 endmodule
