@@ -3,7 +3,7 @@
 module keyboard(clock, char, keyboard_data);
   input clock;
   input char;
-  output reg [7:0] keyboard_data;
+  output reg [3:0] keyboard_data;
 
   reg [3:0] counter;
   reg flag;
@@ -42,11 +42,20 @@ module keyboard(clock, char, keyboard_data);
     /*
     * A = 1C, S = 1B, D = 23, F = 2B
     */
-   if (temp_data == 8'h1C || temp_data == 8'h1B || temp_data == 8'h23 || temp_data == 8'h2B) begin 
-    keyboard_data <= temp_data;   
+   if (temp_data == 8'h1C) begin  
+     keyboard_data <= 4'b1000;
    end  
+   else if (temp_data == 8'h1B) begin 
+     keyboard_data <= 4'b0100;
+   end 
+   else if (temp_data == 8'h23) begin 
+     keyboard_data <= 4'b0010;
+   end 
+   else if (temp_data == 8'h2B) begin 
+     keyboard_data <= 4'b0001;
+   end 
    else begin 
-     keyboard_data <= 8'b0;
+     keyboard_data <= 4'b0000;
    end 
   end 
 endmodule 

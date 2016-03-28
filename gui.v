@@ -1,6 +1,5 @@
 `timescale 1ns / 1ns
 module gui(clock, reset, keys, colour, x, y, plot); 
-	
   input clock;
   input reset; 
   input [3:0] keys;

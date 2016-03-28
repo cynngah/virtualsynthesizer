@@ -21,7 +21,7 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
   wire [7:0] x;
   wire [6:0] y;
   wire plot;
-  wire [7:0] keyboard_data;
+  wire [3:0] keyboard_data;
 
   vga_adapter VGA(
     .resetn(reset), 
@@ -46,7 +46,7 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
   gui g(
     .clock(CLOCK_50), 
     .reset(reset), 
-    .keys(SW[3:0]), 
+    .keys(keyboard_data[3:0]), 
     .colour(colour), 
     .x(x), 
     .y(y), 
