@@ -1,8 +1,9 @@
 `timescale 1ns / 1ns
-module gui(clock, reset, keys, colour, x, y, plot); 
+module gui(clock, reset, keys, mode, colour, x, y, plot); 
   input clock;
   input reset; 
   input [3:0] keys;
+//  input [1:0] mode;
 
   output [2:0] colour;
   output [7:0] x;
@@ -29,6 +30,7 @@ module gui(clock, reset, keys, colour, x, y, plot);
     .redraw(redraw), 
     .keys_pressed(keys_pressed), 
     .clock_count(clock_count), 
+ //   .mode(mode),
     .colour(colour),
     .x(x), 
     .y(y) 
@@ -57,14 +59,15 @@ module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
   always @(posedge clock) begin
     if (!reset) begin 
      current_state <= REDRAW;
-     clock_count <= 15'b000000000000000;
-     keys_pressed <= 4'b0;
     end 
     else begin 
       current_state <= next_state;
       if (current_state != STATIONARY) begin 
         clock_count <= clock_count + 1'b1;
       end 
+      else begin 
+        clock_count <= 15'b0;
+      end
     end 
   end   
   
@@ -95,9 +98,6 @@ module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
         plot = 1'b1;
         redraw = 1'b1;
       end 
-      STATIONARY: begin 
-        clock_count = 15'b0;
-      end 
       KEY_ONE_PRESSED: begin 
         plot = 1'b1;
         redraw = 1'b1;
@@ -107,8 +107,9 @@ module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
   end 
 endmodule
 
-module datapathgui(clock, reset, redraw, keys_pressed, colour, x, y, clock_count);
+module datapathgui(clock, reset, redraw, keys_pressed, colour, mode, x, y, clock_count);
   input clock, reset, redraw;
+  input [1:0] mode;
   input [14:0] clock_count;
   input [3:0] keys_pressed;
 
@@ -125,7 +126,8 @@ module datapathgui(clock, reset, redraw, keys_pressed, colour, x, y, clock_count
 
   localparam WHITE = 3'b111, 
              BLACK = 3'b000, 
-             RED   = 3'b100; 
+             BLUE = 3'b001, 
+             RED = 3'b100; 
 
   parameter FIRST_DIVIDER = 8'b00100111; 
   parameter SECOND_DIVIDER = 8'b01001111;
@@ -142,12 +144,20 @@ module datapathgui(clock, reset, redraw, keys_pressed, colour, x, y, clock_count
       temp_y <= 7'b0;
     end 
     else if (redraw) begin 
+//      if (clock_count[1:0] < 3'b100 & clock_count[9:8] < 3'b100 & mode[1:0] > 1'b0) begin 
+//        if (mode[1:0] == 2'b01) begin 
+//          colour <= RED; //RECORDING 
+ //       end 
+  //      else begin 
+   //       colour <= GREEN; //PLAYBACK
+//        end 
+ //     end 
       if (clock_count[7:0] == FIRST_DIVIDER || clock_count[7:0] == SECOND_DIVIDER || clock_count[7:0] == THIRD_DIVIDER) begin 
         colour <= BLACK;
       end
       else begin 
         if (keys_pressed == 4'b001 & clock_count[7:0] < FIRST_DIVIDER) begin 
-          colour <= RED;
+          colour <= BLUE;
         end 
         else begin 
           colour <= WHITE;

@@ -17,11 +17,15 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
   wire reset;
   assign reset = KEY[0];
 
+  //GUI wires
   wire [2:0] colour;
   wire [7:0] x;
   wire [6:0] y;
   wire plot;
-  wire [3:0] keyboard_data;
+
+  //Recording wires
+  wire [1:0] mode;
+//  wire [3:0] keyboard_data;
 
   vga_adapter VGA(
     .resetn(reset), 
@@ -46,16 +50,25 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
   gui g(
     .clock(CLOCK_50), 
     .reset(reset), 
-    .keys(keyboard_data[3:0]), 
+    .keys(SW[3:0]), 
+    .mode(mode), 
     .colour(colour), 
     .x(x), 
     .y(y), 
     .plot(plot)
   );
 
-  keyboard k(
-    .clock(PS2_CLK), 
-    .char(PS2_DAT), 
-    .keyboard_data(keyboard_data) 
+  recorder r(
+    .clock(CLOCK_50), 
+    .reset(reset), 
+    .go(KEY[1]), 
+    .keys(SW[3:0]), 
+    .mode(mode)
   );
+
+//  keyboard k(
+//    .clock(PS2_CLK), 
+//    .char(PS2_DAT), 
+//    .keyboard_data(keyboard_data) 
+//  );
 endmodule
