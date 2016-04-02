@@ -29,8 +29,6 @@ else scan_ready <= 1;
 always @(posedge clock50)
 	clock <= ~clock;
 
-
-
 // This process filters the raw clock signal coming from the keyboard 
 // using an eight-bit shift register and two AND gates
 

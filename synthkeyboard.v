@@ -1,6 +1,11 @@
 `timescale 1ns / 1ns
 // Taken from http://students.iitk.ac.in/eclub/assets/tutorials/keyboard.pdf
-module keyboard(clock, char, keyboard_data);
+module topkeyboard(PS2_CLK, PS2_DAT, LEDR);
+  
+  synthkeyboard(clock
+endmodule
+
+module synthkeyboard(clock, char, keyboard_data);
   input clock;
   input char;
   output reg [3:0] keyboard_data;

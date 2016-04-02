@@ -14,39 +14,32 @@ module part1 (LEDR, CLOCK_50, CLOCK2_50, KEY, FPGA_I2C_SCLK, FPGA_I2C_SDAT, AUD_
 	output [9:0] LEDR;
 	
 	// Local wires.
-	wire read_ready, write_ready;
-	reg write, read;
-
-	always @(read_ready, write_ready) begin 
-		if (read_ready == 1'b1) begin 
-			read = 1'b1;	
-		end
-		if (write_ready == 1'b1) begin 
-			write = 1'b1;
-		end 
-	end 
+	wire read_ready, write_ready, write, read;
 	wire [23:0] readdata_left, readdata_right;
 	wire [23:0] writedata_left, writedata_right;
 	wire reset = ~KEY[0];
 
 	// Local registers
+        assign LEDR[0] = write_ready;
+
+        // This should be in an always block
+        reg [7:0] counter;
+        always @(write_ready) begin 
+          if (reset) begin 
+            counter[7:0] <= 1'b0;
+          end
+          if (write_ready) begin 
+            write <= 1'b1;
+            counter[7:0] <= counter[7:0] + 1'b1;
+            writedata_left[0] = counter[7];
+          end 
+          else begin 
+            write <= 1'b0;
 
 	/////////////////////////////////
 	// Your code goes here 
 	/////////////////////////////////
 	
-	always @(write_ready, read_ready) begin 
-		if (write_ready) begin 
-			write = 1'b1;	
-		end 
-		else if (read_ready) begin 
-			read = 1'b1;
-		end 
-	end 
-	assign writedata_left = 24'b11111111;
-	assign writedata_right = 24'b11111111;
-	
-	assign LEDR[9:0] = readdata_left[23:0]; 
 /////////////////////////////////////////////////////////////////////////////////
 // Audio CODEC interface. 
 //

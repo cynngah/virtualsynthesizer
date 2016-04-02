@@ -80,5 +80,4 @@ module controlrecorder(clock, reset, recording, playing_back, mode, go);
       end 
     endcase
   end
-
 endmodule

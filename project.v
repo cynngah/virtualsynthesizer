@@ -25,7 +25,6 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
 
   //Recording wires
   wire [1:0] mode;
-//  wire [3:0] keyboard_data;
 
   vga_adapter VGA(
     .resetn(reset), 
@@ -66,9 +65,4 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
     .mode(mode)
   );
 
-//  keyboard k(
-//    .clock(PS2_CLK), 
-//    .char(PS2_DAT), 
-//    .keyboard_data(keyboard_data) 
-//  );
 endmodule

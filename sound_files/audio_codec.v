@@ -266,7 +266,7 @@ Altera_UP_Audio_Out_Serializer Audio_Out_Serializer (
 	.serial_audio_out_data			(AUD_DACDAT)
 );
 defparam
-	Audio_Out_Serializer.AUDIO_DATA_WIDTH = AUDIO_DATA_WIDTH;
+	Audio_Out_Serializer.AUDIO_DATA_WIDTH = AUDIO_DATA_WIDTH; // This is 24
 
 endmodule
 
