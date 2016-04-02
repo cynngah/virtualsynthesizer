@@ -1,6 +1,9 @@
-module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N, VGA_R, VGA_G, VGA_B, PS2_CLK, PS2_DAT);
-
+module synth_top(SW, KEY, CLOCK_50, 
+                 VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N, VGA_R, VGA_G, VGA_B, //VGA Inputs 
+                 CLOCK2_50, FPGA_I2C_SCLK, FPGA_I2C_SDAT, AUD_XCK, AUD_DACLRCK, AUD_ADCLRCK, AUD_BCLK, AUD_ADCAT, AUD_DACDAT //Audio input
+                ); 
   input CLOCK_50;  
+  input [3:0] SW;
   input [3:0] KEY;
   input PS2_CLK;
   input PS2_DAT;
@@ -65,4 +68,18 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
     .mode(mode)
   );
 
+  sound s(
+    .switches(SW[3:0]), 
+    .clock50(CLOCK_50), 
+    .clock2_50(CLOCK2_50), 
+    .key(KEY[0]), 
+    .fpga_i2c_sclk(FPGA_I2C_SCLK), 
+    .fpga_i2c_sdat(FPGA_I2C_SDAT), 
+    .aud_xck(AUD_XCK), 
+    .aud_daclrck(AUD_DA_CLRCK), 
+    .aud_adclrck(AUD_ADCLRCK), 
+    .aud_bclk(AUD_BCLK), 
+    .aud_adcat(AUD_ADCAT), 
+    .aud_dacdat(AUD_DACDAT)
+  );
 endmodule

@@ -46,7 +46,7 @@ module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
   output reg plot, redraw; 
   output reg [14:0] clock_count; 
 
-  reg [2:0] current_state, next_state; //Does this? Yes
+  reg [2:0] current_state, next_state; 
 
   localparam REDRAW = 3'b000,
              STATIONARY = 3'b001, 
