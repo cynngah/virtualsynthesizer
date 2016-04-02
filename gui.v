@@ -50,7 +50,10 @@ module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
 
   localparam REDRAW = 3'b000,
              STATIONARY = 3'b001, 
-             KEY_ONE_PRESSED = 3'b010; 
+             KEY_ONE_PRESSED = 3'b010, 
+             KEY_TWO_PRESSED = 3'b011, 
+             KEY_THREE_PRESSED = 3'b100, 
+             KEY_FOUR_PRESSED = 3'b101; 
   /*
   * Can be reset for testing purposes 
   */
@@ -78,12 +81,22 @@ module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
       STATIONARY: begin 
         if (keys[0] == 1'b1) begin 
           next_state = KEY_ONE_PRESSED;
-        end
+        end 
+        else if (keys[1] == 1'b1) begin 
+          next_state = KEY_TWO_PRESSED;
+        end 
+        else if (keys[2] == 1'b1) begin 
+          next_state = KEY_THREE_PRESSED;
+        end 
+        else if (keys[3] == 1'b1) begin 
+          next_state = KEY_FOUR_PRESSED;
+        end 
         else begin 
           next_state = REDRAW;
         end 
       end
       KEY_ONE_PRESSED: next_state = clock_count == PIXEL_COUNT ? STATIONARY : KEY_ONE_PRESSED;
+      KEY_TWO_PRESSED: 
       default: next_state = REDRAW;
     endcase
   end 
@@ -103,6 +116,21 @@ module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
         redraw = 1'b1;
         keys_pressed = 4'b0001;
       end
+      KEY_TWO_PRESSED: begin 
+        plot = 1'b1; 
+        redraw = 1'b1;
+        keys_pressed = 4'b0010;
+      end 
+      KEY_THREE_PRESSED: begin 
+        plot = 1'b1; 
+        redraw = 1'b1;
+        keys_pressed = 4'b0100;
+      end 
+      KEY_FOUR_PRESSED: begin 
+        plot = 1'b1;
+        redraw = 1'b1;
+        keys_pressed = 4'b1000;
+      end 
     endcase
   end 
 endmodule
@@ -156,7 +184,16 @@ module datapathgui(clock, reset, redraw, keys_pressed, colour, mode, x, y, clock
         colour <= BLACK;
       end
       else begin 
-        if (keys_pressed == 4'b001 & clock_count[7:0] < FIRST_DIVIDER) begin 
+        if (keys_pressed == 4'b0001 & clock_count[7:0] < FIRST_DIVIDER) begin // First key 
+          colour <= BLUE;
+        end 
+        else if (keys_pressed == 4'b0010 & clock_count[7:0] > FIRST_DIVIDER & clock_count[7:0] < SECOND_DIVIDER) begin // Second key
+          colour <= BLUE;
+        end 
+        else if (keys_pressed == 4'b0100 & clock_count[7:0] > SECOND_DIVIDER & clock_count[7:0] < THIRD_DIVIDER) begin // Third key
+          colour <= BLUE;
+        end 
+        else if (keys_pressed == 4'b1000 & clock_count[7:0] > THIRD_DIVIDER ) begin // Fourth key
           colour <= BLUE;
         end 
         else begin 
