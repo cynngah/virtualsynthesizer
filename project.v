@@ -25,6 +25,7 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
 
   //Recording wires
   wire [1:0] mode;
+  wire [3:0] playback_keys;
 
   vga_adapter VGA(
     .resetn(reset), 
@@ -50,6 +51,7 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
     .clock(CLOCK_50), 
     .reset(reset), 
     .keys(SW[3:0]), 
+    .playback_keys(playback_keys[3:0]), 
     .mode(mode), 
     .colour(colour), 
     .x(x), 
@@ -62,7 +64,9 @@ module synth_top(KEY, CLOCK_50, VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N
     .reset(reset), 
     .go(KEY[1]), 
     .keys(SW[3:0]), 
-    .mode(mode)
+    .mode(mode), 
+    .playback_keys(playback_keys[3:0])
+
   );
 
 endmodule
