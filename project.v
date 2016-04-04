@@ -1,12 +1,10 @@
 module synth_top(SW, KEY, CLOCK_50, 
                  VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N, VGA_R, VGA_G, VGA_B, //VGA Inputs 
-                 CLOCK2_50, FPGA_I2C_SCLK, FPGA_I2C_SDAT, AUD_XCK, AUD_DACLRCK, AUD_ADCLRCK, AUD_BCLK, AUD_ADCAT, AUD_DACDAT //Audio input
+                 CLOCK2_50, FPGA_I2C_SCLK, FPGA_I2C_SDAT, AUD_XCK, AUD_DACLRCK, AUD_ADCLRCK, AUD_BCLK, AUD_ADCAT, AUD_DACDAT //Audio inputs
                 ); 
   input CLOCK_50;  
   input [3:0] SW;
   input [3:0] KEY;
-  input PS2_CLK;
-  input PS2_DAT;
 
   output VGA_CLK;
   output VGA_HS;

@@ -1,8 +1,17 @@
 `timescale 1ns / 1ns
-module gui(clock, reset, keys, mode, colour, x, y, plot); 
+module gui(clock, 
+           reset, 
+           keys, 
+           mode, 
+           //playback_keys
+           colour, 
+           x, 
+           y, 
+           plot); 
   input clock;
   input reset; 
   input [3:0] keys;
+//  input [3:0] playback_keys;
 //  input [1:0] mode;
 
   output [2:0] colour;
@@ -29,6 +38,7 @@ module gui(clock, reset, keys, mode, colour, x, y, plot);
     .reset(reset), 
     .redraw(redraw), 
     .keys_pressed(keys_pressed), 
+    .playback_keys(playback_keys), 
     .clock_count(clock_count), 
  //   .mode(mode),
     .colour(colour),
@@ -135,11 +145,19 @@ module controlgui(clock, reset, keys, plot, redraw, clock_count, keys_pressed);
   end 
 endmodule
 
-module datapathgui(clock, reset, redraw, keys_pressed, colour, mode, x, y, clock_count);
+module datapathgui(clock, 
+                   reset, 
+                   redraw, 
+                   colour, 
+  //                 mode, 
+                   x, 
+                   y, 
+                   clock_count);
   input clock, reset, redraw;
-  input [1:0] mode;
+//  input [1:0] mode;
   input [14:0] clock_count;
   input [3:0] keys_pressed;
+
 
   //Remove unnecessary regs
   output reg [2:0] colour;
